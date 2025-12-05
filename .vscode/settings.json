@@ -1,0 +1,8 @@
+{
+  "files.eol": "\n", // LF для Unix/Linux/macOS
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
