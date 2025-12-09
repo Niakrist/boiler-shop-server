@@ -2,6 +2,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +21,18 @@ async function bootstrap() {
   // 1. Сериализует пользователя в сессию (сохраняет user.id в сессии).
   // 2. Десериализует пользователя из сессии (превращает user.id обратно в объект пользователя)
   app.use(passport.session());
+
+  // Документация swagger
+  //  https://docs-nestjs.netlify.app/openapi/introduction
+
+  const config = new DocumentBuilder()
+    .setTitle('Boiler-shop')
+    .setDescription('API documentation')
+    .setVersion('1.0')
+    .addTag('api')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 5001);
 }
