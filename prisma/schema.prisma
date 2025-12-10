@@ -9,14 +9,34 @@ datasource db {
 }
 
 model User {
- id String @id @default(cuid())
- createdAt DateTime @default(now()) @map("created_at")
- updatedAt DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
- username String  @unique
- email  String
- password String
+  username String @unique
+  email    String
+  password String
 
- @@map("user")
+  @@map("user")
+}
 
+model BoilerPart {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name               String
+  description        String
+  price              Int      @default(0)
+  boilerManufacturer String   @map("boiler_manufacturer")
+  partsManufacturer  String   @map("parts_manufacturer")
+  venderCode         String   @map("vender_code")
+  images             String[]
+  inStock            Int      @default(0) @map("in_stock")
+  bestseller         Boolean  @default(false)
+  newBoilerPart      Boolean  @default(false)
+  popularity         Int
+  compatibility      String
+
+  @@map("boilerPart")
 }

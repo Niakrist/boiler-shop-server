@@ -40,20 +40,20 @@ export class UserController {
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   @Header('Content-type', 'application/json')
-  async login(@Request() req) {
+  login(@Request() req) {
     return { user: req.user, msg: 'Logged in' };
   }
 
   @ApiOkResponse({ type: LoginCheckUserResponse })
   @UseGuards(AuthenticatedGuard)
   @Get('/login-check')
-  async loginCheck(@Request() req) {
+  loginCheck(@Request() req) {
     return req.user;
   }
 
   @ApiOkResponse({ type: LogoutUserResponse })
   @Get('/logout')
-  async logout(@Request() req) {
+  logout(@Request() req) {
     req.session.destroy();
     return { msg: 'session has ended' };
   }
