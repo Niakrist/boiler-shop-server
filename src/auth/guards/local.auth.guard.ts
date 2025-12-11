@@ -25,4 +25,4 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
     return result;
   }
-}
+} 
