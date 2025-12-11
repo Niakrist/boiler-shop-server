@@ -6,6 +6,12 @@ import { BoilerPartModule } from './boiler-part/boiler-part.module';
 import { PaginationModule } from './pagination/pagination.module';
 
 @Module({
-  imports: [UserModule, ConfigModule.forRoot(), AuthModule, BoilerPartModule, PaginationModule],
+  imports: [
+    UserModule,
+    ConfigModule.forRoot(),
+    AuthModule,
+    BoilerPartModule,
+    PaginationModule,
+  ],
 })
 export class AppModule {}

@@ -38,5 +38,27 @@ model BoilerPart {
   popularity         Int
   compatibility      String
 
-  @@map("boilerPart")
+  @@map("boiler_part")
+}
+
+model ShoppingCart {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt() @map("updated_at")
+
+  name String
+  price Int @default(0)
+  boilerManufacturer String   @map("boiler_manufacturer")
+  partsManufacturer  String   @map("parts_manufacturer")
+  image String
+  inStock Int @map("in_stock")
+  
+  userId String @map("user_id")
+  partId String@map("part_id")
+
+  count Int
+  totalPrice Int @map("total_price")
+
+  @@map("shopping_cart")
+
 }
