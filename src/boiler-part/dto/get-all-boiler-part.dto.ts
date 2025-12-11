@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 import { PaginationDto } from 'src/pagination/dto/pagination.dto';
 
-export class GetAllBoilerPartGto extends PaginationDto {
+export class GetAllBoilerPartDto extends PaginationDto {
   @IsOptional()
   @IsString()
   name?: string;
@@ -9,6 +9,10 @@ export class GetAllBoilerPartGto extends PaginationDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  searchTerm?: string;
 
   // @IsNumber({}, { message: 'Цена должна быть числом' })
   // @IsNotEmpty({ message: 'Цена не может быть пустой' })
