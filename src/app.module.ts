@@ -4,8 +4,16 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { BoilerPartModule } from './boiler-part/boiler-part.module';
 import { PaginationModule } from './pagination/pagination.module';
+import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
 
 @Module({
-  imports: [UserModule, ConfigModule.forRoot(), AuthModule, BoilerPartModule, PaginationModule],
+  imports: [
+    UserModule,
+    ConfigModule.forRoot(),
+    AuthModule,
+    BoilerPartModule,
+    PaginationModule,
+    ShoppingCartModule,
+  ],
 })
 export class AppModule {}
