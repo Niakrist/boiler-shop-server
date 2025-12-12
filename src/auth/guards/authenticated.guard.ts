@@ -16,21 +16,9 @@ export class AuthenticatedGuard implements CanActivate {
     // Проверяем все возможные признаки аутентификации
     const isAuthenticated = request.isAuthenticated();
 
-    console.log('=== Authentication Debug ===');
-    console.log('1. Session exists?', !!request.session);
-    console.log('2. Session ID:', request.sessionID);
-    console.log('3. Passport user:', request.user);
-    console.log('4. Cookies:', request.cookies);
-    console.log('5. isAuthenticated():', isAuthenticated);
-    console.log('6. Session data:', request.session?.passport);
-    console.log('===========================');
-
     if (!isAuthenticated) {
-      console.log('Access DENIED - User not authenticated');
       throw new ForbiddenException('Please log in first');
     }
-
-    console.log('Access GRANTED - User authenticated');
 
     // request.isAuthenticated() добавляется Passport.js когда мы используем app.use(passport.initialize()) в main.ts
     // Метод проверяет:
