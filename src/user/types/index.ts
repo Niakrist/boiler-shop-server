@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IShoppingCart } from 'src/shopping-cart/types';
 
 export class LoginUserRequest {
   @ApiProperty({ example: 'user1' })
@@ -66,4 +67,14 @@ export class SignUpUserResponse {
 
   @ApiProperty({ example: '$argon2id$v=19$m=65536' })
   password: string;
+}
+
+export interface IUser {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  username: string;
+  email: string;
+  password: string;
+  shoppingCart: IShoppingCart;
 }

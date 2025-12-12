@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  // provider     = "prisma-client-js" для seed
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -13,9 +14,10 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  username String @unique
-  email    String
-  password String
+  username     String        @unique
+  email        String
+  password     String
+  shoppingCart ShoppingCart?
 
   @@map("user")
 }
@@ -38,27 +40,69 @@ model BoilerPart {
   popularity         Int
   compatibility      String
 
+  // // ДОБАВЛЯЕМ ОБРАТНУЮ СВЯЗЬ (опционально)
+  cartItems ShoppingCartItem[]
+  // Это нужно, чтобы можно было получить все корзины, где есть этот товар
+  // Но можно и без этого, если не нужно
+
   @@map("boiler_part")
 }
 
 model ShoppingCart {
-  id String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt() @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  name String
-  price Int @default(0)
-  boilerManufacturer String   @map("boiler_manufacturer")
-  partsManufacturer  String   @map("parts_manufacturer")
-  image String
-  inStock Int @map("in_stock")
-  
-  userId String @map("user_id")
-  partId String@map("part_id")
+  //Связь с пользователем (1:1)
+  userId String @unique @map("user_id")
 
-  count Int
-  totalPrice Int @map("total_price")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // @relation - определяет связь между таблицами. Без @relation Prisa не поймёт, что это связь между таблицами
+  // fields: [userId] - поле в ЭТОЙ таблице (ShoppingCart)
+  // references: [id] - поле в СВЯЗАННОЙ таблице (User.id)
+  // onDelete: Cascade - при удалении пользователя удаляется и его корзина
 
+  items ShoppingCartItem[]
+  // ShoppingCartItem[] - массив товаров в корзине
+  // Это обратная связь от ShoppingCartItem к ShoppingCart
+
+  @@index([userId])
   @@map("shopping_cart")
+}
 
+model ShoppingCartItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Связь с корзиной (N:1)
+  cartId String       @map("cart_id")
+  cart   ShoppingCart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  // Один элемент принадлежит одной корзине
+  // onDelete: Cascade - при удалении корзины удаляются все её элементы
+
+  // Связь с товаром (N:1)
+  partId String     @map("part_id")
+  part   BoilerPart @relation(fields: [partId], references: [id], onDelete: Cascade)
+  // Один элемент ссылается на один товар
+  // При удалении товара (onDelete не указан) - будет ошибка при наличии в корзине
+
+  //  Количество товара
+  quantity Int @default(1)
+  // @default(1) - по умолчанию 1 штука
+
+  // 6. ДОПОЛНИТЕЛЬНО: цена на момент добавления
+  priceAtAddition Int? @map("price_at_addition")
+  // Int? - опциональное поле (может быть null)
+  // Хранит цену товара на момент добавления в корзину
+  // Полезно для истории заказов, если цена товара изменится
+  // Один товар может быть только один раз в корзине
+  // Предотвращает дублирование записей
+
+  // 7. УНИКАЛЬНЫЙ КОМПОЗИТНЫЙ КЛЮЧ
+  @@unique([cartId, partId])
+  // Индексы для ускорения поиска и повышения производительносит (минусы - индексы занимают память в БД)
+  @@index([cartId])           
+  @@index([partId])           
+  @@map("shopping_cart_item")
 }
