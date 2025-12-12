@@ -19,7 +19,7 @@ export interface IBoilerPart {
 }
 
 // Все товары
-class BoilerPart {
+export class BoilerPart {
   @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
   id: string;
 
