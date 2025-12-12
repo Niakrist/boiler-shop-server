@@ -1,12 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma.service';
+import {
+  CartAddRequest,
+  CartAddResponse,
+  CartDeleteRequest,
+  CartDeleteResponse,
+  CartRequest,
+  CartResponse,
+  CartUpdateRequest,
+  CartUpdateResponse,
+} from './types';
 
 @Injectable()
 export class ShoppingCartService {
   constructor(private readonly prisma: PrismaService) {}
   async createCart(userId: string) {
     // Создать корзину для пользователя
-
     return this.prisma.shoppingCart.create({
       data: { userId: userId },
       include: { items: { include: { part: true } } },
@@ -14,6 +24,7 @@ export class ShoppingCartService {
   }
 
   // Получить корзину пользователя
+
   async getCart(userId: string) {
     let cart = await this.prisma.shoppingCart.findFirst({
       where: { userId },
@@ -74,6 +85,7 @@ export class ShoppingCartService {
   }
 
   // Обновить количество товара
+
   async updateQuantity(userId: string, partId: string, quantity: number) {
     const cart = await this.prisma.shoppingCart.findFirst({
       where: { userId },
