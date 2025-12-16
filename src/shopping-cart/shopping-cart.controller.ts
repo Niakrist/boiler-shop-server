@@ -11,45 +11,64 @@ import {
 import { ShoppingCartService } from './shopping-cart.service';
 import { addToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import {
-  CartAddRequest,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
   CartAddResponse,
-  CartClearRequest,
   CartClearResponse,
-  CartDeleteRequest,
   CartDeleteResponse,
-  CartRequest,
   CartResponse,
-  CartUpdateRequest,
   CartUpdateResponse,
 } from './types';
+import type { AuthenticatedRequest } from 'src/common/types/request.type';
 
+@ApiTags('Корзина покупок')
 @Controller('cart')
 export class ShoppingCartController {
   constructor(private readonly shoppingCartService: ShoppingCartService) {}
-  @ApiBody({ type: CartRequest })
+
+  @ApiOperation({
+    summary: 'Получить корзину пользователя',
+    description: 'Возвращает все товары в корзине текущего пользователя',
+  })
   @ApiOkResponse({ type: CartResponse })
   @Get()
-  async getCart(@Request() req) {
+  async getCart(@Request() req: AuthenticatedRequest) {
     return this.shoppingCartService.getCart(req.user.id);
   }
-  @ApiBody({ type: CartAddRequest })
+
+  @ApiOperation({
+    summary: 'Добавить товар в корзину',
+    description: 'Добавляет указанный товар в корзину пользователя',
+  })
+  @ApiBody({ type: addToCartDto })
   @ApiOkResponse({ type: CartAddResponse })
   @Post('add')
-  async addToCart(@Request() req, @Body() dto: addToCartDto) {
+  async addToCart(
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: addToCartDto,
+  ) {
     return this.shoppingCartService.addToCart(
-      req.user.userId,
+      req.user.id,
       dto.partId,
       dto.quantity,
     );
   }
 
-  @ApiBody({ type: CartUpdateRequest })
+  @ApiOperation({
+    summary: 'Обновить количество товара в корзине',
+    description: 'Изменяет количество указанного товара в корзине пользователя',
+  })
+  @ApiBody({ type: UpdateCartItemDto })
   @ApiOkResponse({ type: CartUpdateResponse })
   @Put('item/:partId')
   async updateItem(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('partId') partId: string,
     @Body() dto: UpdateCartItemDto,
   ) {
@@ -60,17 +79,32 @@ export class ShoppingCartController {
     );
   }
 
-  @ApiBody({ type: CartDeleteRequest })
+  @ApiOperation({
+    summary: 'Удалить товар из корзины',
+    description: 'Удаляет указанный товар из корзины пользователя',
+  })
   @ApiOkResponse({ type: CartDeleteResponse })
+  @ApiParam({
+    name: 'partId',
+    required: true,
+    description: 'ID детали (товара)',
+    example: 'cmizx1v870000ykv4emwf7csx',
+  })
   @Delete('item/:partId')
-  async removeItem(@Request() req, @Param('partId') partId: string) {
+  async removeItem(
+    @Request() req: AuthenticatedRequest,
+    @Param('partId') partId: string,
+  ) {
     return this.shoppingCartService.removeFromCart(req.user.id, partId);
   }
 
-  @ApiBody({ type: CartClearRequest })
+  @ApiOperation({
+    summary: 'Очистить корзину',
+    description: 'Удаляет все товары из корзины пользователя',
+  })
   @ApiOkResponse({ type: CartClearResponse })
   @Delete('clear')
-  async clearCart(@Request() req) {
+  async clearCart(@Request() req: AuthenticatedRequest) {
     return this.shoppingCartService.clearCart(req.user.id);
   }
 }

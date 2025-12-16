@@ -1,16 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma.service';
-import {
-  CartAddRequest,
-  CartAddResponse,
-  CartDeleteRequest,
-  CartDeleteResponse,
-  CartRequest,
-  CartResponse,
-  CartUpdateRequest,
-  CartUpdateResponse,
-} from './types';
 
 @Injectable()
 export class ShoppingCartService {

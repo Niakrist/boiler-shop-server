@@ -11,9 +11,18 @@ export interface IShoppingCart {
   items: IShoppingCartItem[];
 }
 
-export interface IShoppingCartItem {}
+export interface IShoppingCartItem {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  cartId: string;
+  partId: string;
+  part: BoilerPart;
+  quantity: number;
+  priceAtAddition: number;
+}
 
-class CartItem {
+class CartItem implements IShoppingCartItem {
   @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
   id: string;
 
@@ -29,7 +38,7 @@ class CartItem {
   @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
   partId: string;
 
-  @ApiProperty({ type: BoilerPart, isArray: true })
+  @ApiProperty({ type: BoilerPart })
   part: BoilerPart;
 
   @ApiProperty({ example: 10 })
@@ -53,38 +62,14 @@ class Cart {
   userId: string;
 
   @ApiProperty({ type: CartItem, isArray: true })
-  data: CartItem;
+  items: CartItem[];
 }
 
 export class CartResponse extends Cart {}
-export class CartRequest {
-  @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
-  userId: string;
-}
 
 export class CartAddResponse extends Cart {}
-export class CartAddRequest {
-  @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
-  userId: string;
-
-  @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
-  partId: string;
-
-  @ApiProperty({ example: 5 })
-  quantity: number;
-}
 
 export class CartUpdateResponse extends Cart {}
-export class CartUpdateRequest {
-  @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
-  userId: string;
-
-  @ApiProperty({ example: 'cmizx1v870000ykv4emwf7csx' })
-  partId: string;
-
-  @ApiProperty({ example: 5 })
-  quantity: number;
-}
 
 export class CartDeleteResponse {
   @ApiProperty({ example: 'cmj2up3bd0000zgovcufbb1vo' })
@@ -109,20 +94,7 @@ export class CartDeleteResponse {
   priceAtAddition: number;
 }
 
-export class CartDeleteRequest {
-  @ApiProperty({ example: 'cmj2up3bd0000zgovcufbb1vo' })
-  userId: string;
-
-  @ApiProperty({ example: 'cmj2ly0ab001hv4ov6427ronj' })
-  partId: string;
-}
-
 export class CartClearResponse {
   @ApiProperty({ example: 1 })
   count: number;
-}
-
-export class CartClearRequest {
-  @ApiProperty({ example: 'cmj2up3bd0000zgovcufbb1vo' })
-  userId: string;
 }
