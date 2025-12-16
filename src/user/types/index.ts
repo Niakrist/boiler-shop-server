@@ -12,13 +12,13 @@ export class LoginUserRequest {
 export class LoginUserResponse {
   @ApiProperty({
     example: {
-      userId: 'cmisvyp520000ygovfkm556t3',
+      id: 'cmisvyp520000ygovfkm556t3',
       username: 'user1',
       email: '1@mail.ru',
     },
   })
   user: {
-    userId: string;
+    id: string;
     username: string;
     email: string;
   };
@@ -37,7 +37,7 @@ export class LogoutUserResponse {
 
 export class LoginCheckUserResponse {
   @ApiProperty({ example: 'cmisvyp520000ygovfkm556t3' })
-  userId: string;
+  id: string;
 
   @ApiProperty({ example: 'user1' })
   username: string;
