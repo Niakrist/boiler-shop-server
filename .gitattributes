@@ -1,1 +1,16 @@
-* text eol=lf
+# Устанавливаем автоматическое определение для текстовых файлов
+* text=auto
+
+# Явно указываем для определённых типов файлов
+*.ts text
+*.js text
+*.json text
+*.html text
+*.css text
+*.md text
+
+# Для бинарных файлов отключаем преобразование
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
