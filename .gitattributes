@@ -41,7 +41,7 @@ yarn.lock text eol=lf
 *.sh text eol=lf
 *.bash text eol=lf
 *.ps1 text eol=lf
-*.bat text eol=crlf  # BAT файлы должны быть CRLF на Windows!
+*.bat text eol=crlf
 
 # Binary files - no processing
 *.png binary
