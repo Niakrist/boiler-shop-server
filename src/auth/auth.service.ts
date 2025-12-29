@@ -7,6 +7,7 @@ export class AuthService {
   constructor(private readonly userService: UserService) {}
   async validateUser(username: string, password: string) {
     const user = await this.userService.findOne(username);
+
     if (!user) {
       throw new UnauthorizedException('username invalid');
     }
