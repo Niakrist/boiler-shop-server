@@ -27,9 +27,6 @@ export class LoginUserResponse {
   msg: string;
 }
 
-// LogoutUserRequest нам не нужен
-class LogoutUserRequest {}
-
 export class LogoutUserResponse {
   @ApiProperty({ example: 'session has ended' })
   msg: string;
@@ -45,9 +42,6 @@ export class LoginCheckUserResponse {
   @ApiProperty({ example: '1@mail.ru' })
   email: string;
 }
-
-// Нам не нужен, это описывается в create-user.dto.ts
-class SignUpUserRequest {}
 
 export class SignUpUserResponse {
   @ApiProperty({ example: 'cmisvyp520000ygovfkm556t3' })
