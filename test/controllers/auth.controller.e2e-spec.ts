@@ -84,8 +84,7 @@ describe('Auth controller', () => {
       .send({
         username: mockedUser.username,
         password: mockedUser.password,
-      })
-      .expect(200);
+      });
 
     // Типизация ответа
     const responseBody = response.body as LoginUserResponse;

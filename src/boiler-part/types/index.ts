@@ -83,7 +83,7 @@ export class PaginatedAndFilterResponse {
   count: number;
 
   @ApiProperty({ type: BoilerPart, isArray: true })
-  data: BoilerPart;
+  data: BoilerPart[];
 }
 
 // Все бестселлеры
@@ -101,7 +101,7 @@ export class GetBestsellersResponse extends PaginatedAndFilterResponse {
   declare count: number;
 
   @ApiProperty({ type: Bestseller, isArray: true })
-  declare data: Bestseller;
+  declare data: Bestseller[];
 }
 
 // Все новинками
@@ -119,7 +119,7 @@ export class GetNewsResponse extends PaginatedAndFilterResponse {
   declare count: number;
 
   @ApiProperty({ type: NewBoilerPart, isArray: true })
-  declare data: NewBoilerPart;
+  declare data: NewBoilerPart[];
 }
 
 // Ответ Поиск одного товара по полю name
@@ -139,7 +139,7 @@ export class SearcByLetter extends BoilerPart {
 // Ответ: все из поиска по тексту
 export class SearchResponse extends PaginatedAndFilterResponse {
   @ApiProperty({ type: SearcByLetter, isArray: true })
-  declare data: SearcByLetter;
+  declare data: SearcByLetter[];
 }
 
 // Запрос: поиск по тексту
