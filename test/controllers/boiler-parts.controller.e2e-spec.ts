@@ -11,6 +11,7 @@ import { BoilerPartService } from 'src/boiler-part/boiler-part.service';
 import { GetAllBoilerPartDto } from 'src/boiler-part/dto/get-all-boiler-part.dto';
 import {
   BoilerPart,
+  FindByNameResponse,
   GetBestsellersResponse,
   PaginatedAndFilterResponse,
 } from 'src/boiler-part/types';
@@ -60,13 +61,13 @@ describe('Boiler Parts Controller', () => {
     app.use(passport.session());
 
     await app.init();
-    await prisma.user.deleteMany();
+
     const user = await userService.create(mockedUser);
     expect(user).toBeDefined();
   });
 
   afterEach(async () => {
-    await prisma.user.deleteMany();
+    await prisma.user.delete({ where: { username: 'part_controller' } });
   });
 
   afterAll(async () => {
@@ -85,9 +86,7 @@ describe('Boiler Parts Controller', () => {
       .get('/boiler-parts/by-id/cmj2lxzze0000v4ovh6xxllet')
       .set('Cookie', login.headers['set-cookie']);
 
-    const responseBody = response.body as BoilerPart;
-
-    expect(responseBody).toEqual(
+    expect(response.body).toEqual(
       expect.objectContaining({
         id: expect.any(String),
         createdAt: expect.any(String),
@@ -212,6 +211,42 @@ describe('Boiler Parts Controller', () => {
           compatibility: expect.any(String),
         },
       ]),
+    );
+  });
+  it('should search boiler part by name', async () => {
+    const body = 'Strategist Conculco aranea.';
+
+    const login = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({ username: mockedUser.username, password: mockedUser.password });
+
+    const response = await request(app.getHttpServer())
+      .post('/boiler-parts/name')
+      .send({ body })
+      .set('Cookie', login.headers['set-cookie']);
+
+    const responseBody = response.body as FindByNameResponse;
+
+    expect(response.status).toBe(201);
+
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+        name: 'Strategist Conculco aranea.',
+        description: expect.any(String),
+        price: expect.any(Number),
+        boilerManufacturer: expect.any(String),
+        partsManufacturer: expect.any(String),
+        venderCode: expect.any(String),
+        images: expect.any(Array),
+        inStock: expect.any(Number),
+        bestseller: expect.any(Boolean),
+        newBoilerPart: expect.any(Boolean),
+        popularity: expect.any(Number),
+        compatibility: expect.any(String),
+      }),
     );
   });
 });

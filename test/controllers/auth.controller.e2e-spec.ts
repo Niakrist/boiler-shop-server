@@ -18,8 +18,8 @@ import request from 'supertest';
 
 // Тестовые данные пользователя
 const mockedUser = {
-  username: 'mock_controller',
-  email: 'mock_controller@test.ru',
+  username: 'auth_controller',
+  email: 'auth_controller@test.ru',
   password: 'mock_123',
 };
 
@@ -56,8 +56,7 @@ describe('Auth controller', () => {
     app.use(passport.initialize());
     app.use(passport.session());
     await app.init();
-    // Очищает таблицу пользователей
-    await prisma.user.deleteMany();
+
     // Создает тестового пользователя
     const user = await userService.create(mockedUser);
     // Проверяет, что пользователь создан
@@ -66,7 +65,8 @@ describe('Auth controller', () => {
 
   // После КАЖДОГО теста очищает базу данных, чтобы тесты не влияли друг на друга (изоляция тестов).
   afterEach(async () => {
-    await prisma.user.deleteMany();
+    // Очищает таблицу пользователей
+    await prisma.user.delete({ where: { username: 'auth_controller' } });
   });
 
   // После ВСЕХ тестов выполняет cleanup

@@ -2,19 +2,27 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import argon2 from 'argon2';
 import { PrismaService } from 'src/prisma.service';
-import { IUser } from 'src/user/types';
 import { UserModule } from 'src/user/user.module';
 import { UserService } from 'src/user/user.service';
+
+// Делаем данные уникальными для каждого запуска
+const getMockedUser = () => ({
+  username: `user_service_${Date.now()}_${Math.random()}`,
+  email: `user_service_${Date.now()}_${Math.random()}@test.ru`,
+  password: 'mock_123',
+});
 
 // unit-тест сервиса
 // Определяет тестовый набор для user.service
 describe('Users Service', () => {
   let userService: UserService;
   let prisma: PrismaService;
+  let testModule: TestingModule;
+  let currentMockedUser: ReturnType<typeof getMockedUser>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // Создаем тестовый модуль с зависимостями
-    const testModule: TestingModule = await Test.createTestingModule({
+    testModule = await Test.createTestingModule({
       imports: [UserModule, ConfigModule.forRoot()],
     }).compile();
 
@@ -26,37 +34,55 @@ describe('Users Service', () => {
     await testModule.init();
   });
 
+  beforeEach(async () => {
+    // Создаем новые уникальные данные для каждого теста
+    currentMockedUser = getMockedUser();
+  });
+
   // После КАЖДОГО теста
   afterEach(async () => {
     // Очищаем таблицу пользователей после КАЖДОГО теста
-    await prisma.user.deleteMany();
+    try {
+      await prisma.user.delete({
+        where: { username: currentMockedUser.username },
+      });
+    } catch (error) {
+      // Игнорируем ошибку если пользователь не найден
+    }
   });
 
   // После ВСЕХ тестов
   afterAll(async () => {
+    // Можно также очистить всех тестовых пользователей
+    await prisma.user.deleteMany({
+      where: {
+        username: {
+          contains: 'user_service_',
+        },
+      },
+    });
     // Разрывает соединение с БД
     await prisma.$disconnect();
+    await testModule.close();
   });
 
   it('should create user', async () => {
-    const newUser = {
-      username: 'test',
-      email: 'test@test.ru',
-      password: 'test123',
-    };
+    const createdUser = await userService.create(currentMockedUser);
 
-    // ВЫЗЫВАЕМ НЕПОСРЕДСТВЕННО МЕТОД СЕРВИСА (без HTTP!)
-    const user = (await userService.create(newUser)) as IUser;
+    expect(createdUser.username).toBe(currentMockedUser.username);
+    expect(createdUser.email).toBe(currentMockedUser.email);
+    expect(createdUser.password).not.toBe(currentMockedUser.password); // Пароль хэширован
 
-    // Проверяем хеш пароля
+    // Проверяем что пароль корректно хэширован
     const passwordIsValid = await argon2.verify(
-      user.password,
-      newUser.password,
+      createdUser.password,
+      currentMockedUser.password,
     );
+    // Проверяем результа
+    expect(passwordIsValid).toBe(true);
 
     // Проверяем результаты
-    expect(user.username).toBe(newUser.username);
-    expect(passwordIsValid).toBe(true);
-    expect(user.email).toBe(newUser.email);
+    expect(createdUser.username).toBe(currentMockedUser.username);
+    expect(currentMockedUser.email).toBe(currentMockedUser.email);
   });
 });
