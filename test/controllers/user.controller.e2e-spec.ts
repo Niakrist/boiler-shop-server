@@ -9,12 +9,11 @@ import argon2 from 'argon2';
 
 // E2E test
 
-// Тестовые данные пользователя
-const mockedUser = {
-  username: 'mosk',
-  email: 'mosk@test.ru',
-  password: 'mosk123',
-};
+const getMockedUser = () => ({
+  username: `user_controller_${Date.now()}_${Math.random()}`,
+  email: `user_controller_${Date.now()}_${Math.random()}@test.ru`,
+  password: 'mock_123',
+});
 
 // Определяет тестовый набор для user.controller
 describe('Users controller', () => {
@@ -24,11 +23,12 @@ describe('Users controller', () => {
   let userService: UserService;
   //Сервис для работы с БД
   let prisma: PrismaService;
+  let testModule: TestingModule;
 
   // Перед КАЖДЫМ тестом создает "чистое" тестовое окружение
   beforeEach(async () => {
     // Создаем тестовый модуль с зависимостями
-    const testModule: TestingModule = await Test.createTestingModule({
+    testModule = await Test.createTestingModule({
       imports: [UserModule, ConfigModule.forRoot()],
     }).compile();
 
@@ -46,16 +46,25 @@ describe('Users controller', () => {
   // Перед КАЖДЫМ тестом подготавливает базу данных
   beforeEach(async () => {
     // Очищает таблицу пользователей
-    await prisma.user.deleteMany();
-    // Создает тестового пользователя
-    const user = await userService.create(mockedUser);
-    // Проверяет, что пользователь создан
-    expect(user).toBeDefined();
+    await prisma.user.deleteMany({
+      where: {
+        username: {
+          contains: 'user_controller_',
+        },
+      },
+    });
   });
 
   // После КАЖДОГО теста очищает базу данных, чтобы тесты не влияли друг на друга (изоляция тестов).
   afterEach(async () => {
-    await prisma.user.deleteMany();
+    // Очищает таблицу пользователей
+    await prisma.user.deleteMany({
+      where: {
+        username: {
+          contains: 'user_controller_',
+        },
+      },
+    });
   });
 
   // После ВСЕХ тестов выполняет cleanup
@@ -64,25 +73,30 @@ describe('Users controller', () => {
     await app.close();
     // Разрывает соединение с БД
     await prisma.$disconnect();
+
+    await testModule.close();
   });
 
   // Тест
   it('should create user', async () => {
-    // Новые данные пользователя
-    const newUser = {
-      username: 'test',
-      email: 'test@test.ru',
-      password: 'test123',
-    };
+    // Arrange
+    // Данные для регистрации нового пользователя
+    const newUser = getMockedUser();
+
+    // Act - создаем через API
     // Отправляет POST запрос на регистрацию
     const response = await request(app.getHttpServer())
       .post('/users/signup')
       .send(newUser);
+
     //  Проверяет хеш пароля с помощью argon2
     const passwordIsValid = await argon2.verify(
       response.body.password,
       newUser.password,
     );
+
+    // Assert
+    expect(response.status).toBe(201); // или 200, в зависимости от вашего API
 
     // Проверки работы кода, что он соответствует ожиданиям (assertions)
     // проверяет, что в ответе API поле username содержит то же значение, которое было отправлено в запросе
